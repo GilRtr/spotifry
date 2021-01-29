@@ -1,0 +1,22 @@
+[package]
+name = "spotifry"
+version = "0.1.0"
+authors = ["Gil Rtr <glrtr2003@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.37"
+chrono = { version = "0.4.19", features = ["serde"] }
+common_macros = "0.1.1"
+reqwest = { version = "0.11.0", features = ["json"] }
+serde = { version = "1.0.123", features = ["derive"] }
+tokio = { version = "1.0.1", features = ["rt-multi-thread", "macros", "io-util", "net", "io-std"] }
+util-rs = "0.1.0"
+webbrowser = "0.5.5"
+
+
+[features]
+# default = ["nightly"]
+nightly = []
