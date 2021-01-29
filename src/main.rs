@@ -4,12 +4,15 @@ use std::{collections::HashMap, io, net::Ipv4Addr, process::Output};
 
 use anyhow::{Context, Result};
 use common_macros::hash_map;
+use objects::{PagingObject, SavedTrackObject};
 use reqwest::{Client, Url};
 use serde::Deserialize;
 use tokio::{
     io::{self as tio, AsyncReadExt},
     net::{TcpListener, TcpStream},
 };
+
+mod objects;
 
 const O_AUTH_ENDPOINT: &str = "https://accounts.spotify.com/authorize";
 const O_AUTH_REDIRECT: &str = "http://localhost/auth/callback/spotify";
@@ -37,9 +40,54 @@ async fn main() -> Result<()> {
         .await
         .context("Failed to retrieve refresh and access tokens")?;
 
-    println!("{:?}", tokens);
+    let mut offset = 0;
 
-    Ok(())
+    loop {
+        let tracks = get_tracks(&requester, &tokens.access_token, format!("{}", offset))
+            .await
+            .context("Request for tracks has failed")?;
+
+        for (artists, track) in tracks
+            .items
+            .into_iter()
+            .map(|t| t.track)
+            .map(|t| (t.artists, t.name))
+            .map(|(a, n)| (a.into_iter().map(|a| a.name).collect::<Vec<String>>(), n))
+        {
+            for artist in artists {
+                print!("{}, ", artist);
+            }
+            println!("{}", track);
+        }
+        if tracks.offset > tracks.total {
+            println!(
+                "offset {{{}}} was bigger {{>}} than total {{{}}}",
+                tracks.offset, tracks.total
+            );
+            break Ok(());
+        }
+        offset += 30;
+    }
+}
+
+async fn get_tracks(
+    requester: &Client,
+    token: &str,
+    offset: String,
+) -> Result<PagingObject<SavedTrackObject>> {
+    requester
+        .get("https://api.spotify.com/v1/me/tracks")
+        .header("Authorization", format!("Bearer {}", token))
+        .query(&hash_map! {
+            "offset" => &*offset,
+            "limit" => "30",
+        })
+        .send()
+        .await?
+        .error_for_status()?
+        .json::<PagingObject<SavedTrackObject>>()
+        .await
+        .context("Can't parse tracks to json")
 }
 
 #[allow(dead_code)]
