@@ -159,7 +159,7 @@ pub struct TrackObject {
     pub(crate) album: Option<SimplifiedAlbumObject>,
     /// The artists who performed the track.
     /// Each artist object includes a link in `href` to more detailed information about the artist.
-    pub(crate) artists: Vec<ArtistObject>,
+    pub(crate) artists: Option<Vec<ArtistObject>>,
     /// A list of the countries in which the track can be played, identified by their [ISO 3166-1 alpha-2](http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code.
     pub(crate) available_markets: Option<Vec<String>>,
     /// The disc number (usually `1` unless the album consists of more than one disc).
@@ -185,7 +185,7 @@ pub struct TrackObject {
     /// The track in the `linked_from` object contains information about the originally requested track.
     pub(crate) linked_from: Option<LinkedTrackObject>,
     /// The name of the track.
-    pub(crate) name: String,
+    pub(crate) name: Option<String>,
     /// The popularity of the track.
     /// The value will be between 0 and 100, with 100 being the most popular.
     /// The popularity is calculated by algorithm and is based, in the most part,
@@ -204,7 +204,7 @@ pub struct TrackObject {
     /// The object type: “track”.
     pub(crate) r#type: Option<String>,
     /// The [Spotify URI](https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids) for the track.
-    pub(crate) uri: Option<String>,
+    pub(crate) uri: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -216,6 +216,64 @@ pub struct SavedTrackObject {
     pub(crate) added_at: Option<DateTime<Utc>>,
     /// Information about the track.
     pub(crate) track: TrackObject,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct PlaylistTracksRefObject {
+    /// A link to the Web API endpoint where full details of the playlist’s tracks can be retrieved.
+    pub(crate) href: Option<String>,
+    /// Number of tracks in the playlist.
+    pub(crate) track: Option<usize>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct PublicUserObject {
+    /// The name displayed on the user’s profile. `null` if not available.
+    pub(crate) display_name: String,
+    /// Known public external URLs for this user.
+    pub(crate) external_urls: ExternalUrlObject,
+    /// Information about the followers of this user.
+    pub(crate) followers: Option<FollowersObject>,
+    /// A link to the Web API endpoint for this user.
+    pub(crate) href: String,
+    /// The [Spotify user ID](https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids) for this user.
+    pub(crate) id: String,
+    /// The user’s profile image.
+    pub(crate) images: Option<Vec<ImageObject>>,
+    /// The object type: “user”.
+    pub(crate) r#type: String,
+    /// The [Spotify URI](https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids) for this user.
+    pub(crate) uri: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SimplifiedPlaylistObject {
+    /// `true` if the owner allows other users to modify the playlist.
+    pub(crate) collaborative: Option<bool>,
+    /// The playlist description. *Only returned for modified, verified playlists, otherwise* `null`.
+    pub(crate) description: Option<String>,
+    /// Known external URLs for this playlist.
+    pub(crate) external_urls: Option<ExternalUrlObject>,
+    /// A link to the Web API endpoint providing full details of the playlist.
+    pub(crate) href: Option<String>,
+    /// The [Spotify ID](https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids) for this playlist.
+    pub(crate) id: String,
+    /// Images for the playlist. The array may be empty or contain up to three images. The images are returned by size in descending order. See [Working with Playlists](https://developer.spotify.com/documentation/general/guides/working-with-playlists/). *Note: If returned, the source URL for the image (url) is temporary and will expire in less than a day.*
+    pub(crate) images: Option<Vec<ImageObject>>,
+    /// The name of the playlist.
+    pub(crate) name: String,
+    /// The user who owns the playlist.
+    pub(crate) owner: Option<PublicUserObject>,
+    /// The playlist’s public/private status: `true` the playlist is public, `false` the playlist is private, `null` the playlist status is not relevant. For more about public/private status, see [Working with Playlists](https://developer.spotify.com/documentation/general/guides/working-with-playlists/).
+    pub(crate) public: Option<bool>,
+    /// The version identifier for the current playlist. Can be supplied in other requests to target a specific playlist version.
+    pub(crate) snapshot_id: Option<String>,
+    /// A collection containing a link (`href`) to the Web API endpoint where full details of the playlist’s tracks can be retrieved, along with the `total` number of tracks in the playlist. Note, a track object may be `null`. This can happen if a track is no longer available.
+    pub(crate) tracks: Option<PlaylistTracksRefObject>,
+    /// The object type: “playlist”.
+    pub(crate) r#type: Option<String>,
+    /// The [Spotify URI](https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids) for the playlist.
+    pub(crate) uri: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]

@@ -15,8 +15,3 @@ serde = { version = "1.0.123", features = ["derive"] }
 tokio = { version = "1.0.1", features = ["rt-multi-thread", "macros", "io-util", "net", "io-std"] }
 util-rs = "0.1.0"
 webbrowser = "0.5.5"
-
-
-[features]
-# default = ["nightly"]
-nightly = []
